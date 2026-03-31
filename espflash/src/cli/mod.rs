@@ -469,6 +469,18 @@ pub fn connect(
     )?)
 }
 
+/// Resolve the serial port for repeated operations.
+pub fn resolve_connect_args(args: &ConnectArgs, config: &Config) -> Result<ConnectArgs> {
+    if args.port.is_some() {
+        return Ok(args.clone());
+    }
+
+    let mut resolved = args.clone();
+    resolved.port = Some(serial::serial_port_info(args, config)?.port_name);
+
+    Ok(resolved)
+}
+
 /// Connect to a target device and print information about its chip
 pub fn board_info(args: &ConnectArgs, config: &Config) -> Result<()> {
     let mut flasher = connect(args, config, true, true)?;
